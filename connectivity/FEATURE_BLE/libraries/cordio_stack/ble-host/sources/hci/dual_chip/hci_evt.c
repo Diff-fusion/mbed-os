@@ -2754,6 +2754,7 @@ void hciEvtProcessMsg(uint8_t *pEvt)
   uint8_t   evt;
   uint8_t   subEvt;
   uint8_t   len;
+  uint8_t   extraMsgLen = 0;
   uint8_t   cbackEvt = 0;
   hciEvt_t  *pMsg;
   uint16_t  handle;
@@ -3013,6 +3014,7 @@ void hciEvtProcessMsg(uint8_t *pEvt)
 #endif
       hciEvtStats.numVendorSpecEvt++;
       cbackEvt = HCI_VENDOR_SPEC_CBACK_EVT;
+      extraMsgLen = len;
 
 #ifdef WSF_DETOKEN_TRACE
       if (WsfDetokenProcessHciEvent(len, pEvt))
@@ -3030,7 +3032,7 @@ void hciEvtProcessMsg(uint8_t *pEvt)
   if (cbackEvt != 0)
   {
     /* allocate temp buffer */
-    if ((pMsg = WsfBufAlloc(hciEvtCbackLen[cbackEvt])) != NULL)
+    if ((pMsg = WsfBufAlloc(hciEvtCbackLen[cbackEvt] + extraMsgLen)) != NULL)
     {
       /* initialize message header */
       pMsg->hdr.param = 0;
